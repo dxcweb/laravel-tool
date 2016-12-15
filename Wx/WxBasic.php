@@ -17,7 +17,7 @@ class WxBasic
         curl_setopt($ch, CURLOPT_URL, $url);//设置URL
         curl_setopt($ch, CURLOPT_POST, 1);//post
         curl_setopt($ch, CURLOPT_HTTPHEADER, $setHeader);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);//设置为 true ，说明进行SSL证书认证  
         curl_setopt($ch, CURLOPT_POSTFIELDS, $query);//传递一个作为HTTP “POST”操作的所有数据的字符串
         curl_setopt($ch, CURLOPT_HEADER, 1);//返回response头部信息
         curl_setopt($ch, CURLOPT_NOBODY, 0);//不返回response body内容

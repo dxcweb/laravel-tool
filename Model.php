@@ -9,6 +9,8 @@
 namespace Tool;
 
 
+use Tool\Util\UserInfo;
+
 class Model
 {
 
@@ -260,7 +262,7 @@ class Model
                     $data['created_at'] = _now();
                 }
                 if (in_array('create_id', $this->fields)) {
-                    $data['create_id'] = _erpUserInfo()['emp_id'];
+                    $data['create_id'] = UserInfo::getMyId();
                 }
                 if (!empty($this->foreign_key_val)) {
                     $data = array_merge($data, $this->foreign_key_val);
@@ -419,7 +421,10 @@ class Model
         if (empty($this->_insert_data)) {
             return true;
         }
-        return $this->db->insert($this->_insert_data);
+		foreach ($this->_insert_data as $value) {
+            $this->db->insert($value);
+        }
+        return true;
     }
 
     /**
@@ -508,8 +513,9 @@ class Model
         foreach ($this->fields as $val) {
             if (isset($original_data[$val]) && $original_data[$val] !== '')
                 $new_data[$val] = $original_data[$val];
-            else
-                $new_data[$val] = null;
+			
+            /*else
+                $new_data[$val] = null;*/
         }
         return $new_data;
     }

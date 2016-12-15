@@ -12,27 +12,34 @@ class Http
      */
     public static function notice($log_path = "", $operation_name = "", $msg = "", $content = "")
     {
-        if (!is_string($content)) {
-            return false;
-        }
         $wxqy_notice = config("myapp.wxqy_notice");
         if (empty($wxqy_notice)) {
             return false;
         }
         $data['agent_id'] = config("myapp.error_notice_agent_id");
+
         if (empty($data['agent_id'])) {
             return false;
         }
+
         if (!is_string($msg)) {
             $msg = json_encode_cn($msg);
         }
-        $data['content'] =
+        $msg = str_replace(":", " = ", "$msg");
+        $msg = str_replace('"', "``", "$msg");
+        if (!is_string($content)) {
+            $content = json_encode_cn($content);
+        }
+        $content = str_replace(":", " = ", "$content");
+        $content = str_replace('"', "``", "$content");
+        $notice_content =
             "项目：" . config('myapp.app_name') . "\n" .
             "环境：" . config('myapp.env') . "\n" .
             "日志路径：" . $log_path . "\n" .
             "操作名称：" . $operation_name . "\n" .
             "错误：" . $msg . "\n" .
             "内容：" . $content;
+        $data['content'] = mb_substr($notice_content, 0, 600, 'utf-8');
         $res = self::post($wxqy_notice . "service/send-text/to-all", $data, [], [], false);
         return $res;
     }
@@ -75,7 +82,7 @@ class Http
         return self::post($url, $http_params, [], [], $error_notice);
     }
 
-    public static function post($url, $params = [], $files = [], $headers = [], $error_notice = true)
+    public static function post($url, $params = [], $files = [], $headers = [], $error_notice = true, $timeout = 30)
     {
         if (!$files) {
             if (is_array($params)) {
@@ -95,7 +102,7 @@ class Http
             $body = $body_res['data'];
             $headers['Content-Type'] = "multipart/form-data; boundary=" . self::$boundary;
         }
-        $return = self::curl($url, 'POST', $body, $headers);
+        $return = self::curl($url, 'POST', $body, $headers, $timeout);
         if ($return['httpCode'] != 200 && $return['httpCode'] != 201) {
             log_file("error/post", "POST非200", ["url" => $url, "params" => $params, "files" => $files, "headers" => $headers], $return['httpCode'], $return['response']);
             if ($error_notice) {
@@ -119,7 +126,7 @@ class Http
         return _output($return["response"]);
     }
 
-    private static function curl($url, $method, $postfields = NULL, $headers = [])
+    private static function curl($url, $method, $postfields = NULL, $headers = [], $timeout = 30)
     {
         $default_headers = [
             "Expect" => ''
@@ -131,15 +138,14 @@ class Http
         }
 
         $ci = curl_init();
-        curl_setopt($ci, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        curl_setopt($ci, CURLOPT_CONNECTTIMEOUT, 30);
-        curl_setopt($ci, CURLOPT_TIMEOUT, 30);//设置超时
+        curl_setopt($ci, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($ci, CURLOPT_TIMEOUT, $timeout);//设置超时
         curl_setopt($ci, CURLOPT_RETURNTRANSFER, TRUE);//要求结果为字符串且输出到屏幕上
         curl_setopt($ci, CURLOPT_ENCODING, "");
-        curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, false);//设置为 true ，说明进行SSL证书认证
         curl_setopt($ci, CURLOPT_SSL_VERIFYHOST, 0);
         //curl_setopt($ci, CURLOPT_HEADERFUNCTION, array($this, 'getHeader'));
-        curl_setopt($ci, CURLOPT_HEADER, FALSE);//设置header
+        curl_setopt($ci, CURLOPT_HEADER, 1);//设置header
 
         switch ($method) {
             case 'POST':
@@ -159,12 +165,14 @@ class Http
         curl_setopt($ci, CURLOPT_URL, $url);
         curl_setopt($ci, CURLOPT_HTTPHEADER, $header_arr);
         curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE);
-
         $response = curl_exec($ci);
         $httpCode = curl_getinfo($ci, CURLINFO_HTTP_CODE);
 //        $httpInfo = curl_getinfo($ci);
+        $headerSize = curl_getinfo($ci, CURLINFO_HEADER_SIZE);
         curl_close($ci);
-        return ["response" => $response, "httpCode" => $httpCode];
+        //$header = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
+        return ["response" => $body, "httpCode" => $httpCode];
     }
 
     private static function build_http_query_multi($params, $files)

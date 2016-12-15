@@ -129,6 +129,12 @@ class DBConnection
         return $this;
     }
 
+    public function whereBetween($column, array $values, $boolean = 'and', $not = false)
+    {
+        $this->connection = $this->connection->whereBetween($column, $values, $boolean, $not);
+        return $this;
+    }
+
     public function orWhere($column, $operator = null, $value = null)
     {
         $this->connection = $this->connection->orWhere($column, $operator, $value);
@@ -141,7 +147,12 @@ class DBConnection
         return $this;
     }
 
-    public function whereRaw($column)
+	public function orderByRaw($column)
+    {
+        $this->connection = $this->connection->orderByRaw($column);
+        return $this;
+    }
+	public function whereRaw($column)
     {
         $this->connection = $this->connection->whereRaw($column);
         return $this;
@@ -184,6 +195,7 @@ class DBConnection
         $this->table($this->table);
         return $data;
     }
+
     public function min($columns)
     {
         $data = $this->connection->min($columns);
@@ -252,6 +264,11 @@ class DBConnection
         $this->connection = $this->connection->leftJoin($table, $one, $operator, $two, $type = 'inner', $where);
         return $this;
     }
+    public function rightJoin($table, $one, $operator = null, $two = null, $type = 'inner', $where = false)
+    {
+        $this->connection = $this->connection->rightJoin($table, $one, $operator, $two, $type = 'inner', $where);
+        return $this;
+    }
 
     public function extjs()
     {
@@ -265,6 +282,28 @@ class DBConnection
         }
         return $this;
     }
+
+    public function antPage()
+    {
+        $p = _getInput();
+        $page = 1;
+        $pageSize = 10;
+        if (isset($p['page'])) {
+            $page = $p['page'];
+        }
+        if (isset($p['pageSize'])) {
+            $pageSize = $p['pageSize'];
+        }
+        $this->page($page, $pageSize);
+//        if (isset($_GET['sort'])) {
+//            $sort = json_decode($_GET['sort'], true);
+//            if (isset($sort[0]['property']) && isset($sort[0]['direction'])) {
+//                $this->orderBy($sort[0]['property'], $sort[0]['direction']);
+//            }
+//        }
+        return $this;
+    }
+
     public function extjs2()
     {
         if (isset($_GET['page']) && $_GET['limit'])

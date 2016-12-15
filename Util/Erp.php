@@ -21,14 +21,23 @@ class Erp
         return $reqhead;
     }
 
+    static public function getFatReqheadByWx()
+    {
+        $erp = UserInfo::getMyInfo();
+        $reqhead = [
+            'opreate_id' => $erp['emp_id'],
+            'dept_id' => $erp['dept_id'],
+        ];
+        return $reqhead;
+    }
+
     /**
      * 检查冯上泽返回的数据
      */
     public static function checkFsz($res, $prefix, $operation_name, $request_data)
     {
         if (!$res['result']) {
-            _output($operation_name . ',请求失败', false);
-            return false;
+            return  _output($operation_name . ',请求失败', false);
         }
         $return_data = json_decode($res['data'], true);
         if (!$return_data['result']) {

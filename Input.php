@@ -54,24 +54,17 @@ class Input
     //获取原始数据
     private static function get_original_data()
     {
-        static $_PUT = null;
-        switch ($_SERVER['REQUEST_METHOD']) {
-            case 'POST':
-                $input = $_POST;
-                break;
-            case 'PUT':
-                if (is_null($_PUT)) {
-                    parse_str(file_get_contents('php://input'), $_PUT);
-                }
-                $input = $_PUT;
-                break;
-            default:
-                $input = $_GET;
+        $put_data = file_get_contents('php://input', 'r');
+        if (!empty($put_data)) {
+            $data = json_decode($put_data, true);
+            if (!empty($data)) {
+                return $data;
+            }
         }
+        $input = $_REQUEST;
         if (isset($input['data'])) {
             $data = json_decode($input['data'], true);
-        }
-        if (!isset($data)) {
+        } else {
             $data = $input;
         }
         return $data;

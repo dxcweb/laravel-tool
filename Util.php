@@ -18,7 +18,7 @@ function error_to_db($operation_name = '', $request_data = '', $return_data = ''
     else
         $return_src = json_encode($return_data, JSON_UNESCAPED_UNICODE);
 
-    $put_data = isset($GLOBALS["HTTP_RAW_POST_DATA"]) ? $GLOBALS["HTTP_RAW_POST_DATA"] : file_get_contents('php://input', 'r');
+    $put_data = file_get_contents('php://input', 'r');
     $data['request_url'] = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER["REQUEST_URI"];
     $data['operation_name'] = $operation_name;
     $data['remarks'] = $remarks;
@@ -47,6 +47,13 @@ function _output($data = "", $result = true, $errorcode = 0, $parameter = [])
     foreach ($parameter as $key => $val) {
         $res[$key] = $val;
     }
+    return $res;
+}
+
+function _outTotal($data, $total)
+{
+    $res = _output($data);
+    $res['total'] = $total;
     return $res;
 }
 
@@ -201,7 +208,6 @@ function _getUserInfo()
     $user_info_key = _getUserInfoKey();
     return \Illuminate\Support\Facades\Redis::get($user_info_key);
 }
-
 
 
 function _setUserInfo($user_id, $user_info)
@@ -377,7 +383,12 @@ function _now()
 
 function log_file($prefix = 'log_file', $operation_name = '', $request_data = "", $return_data = "", $remarks = "", $content = "")
 {
-    $path = config('myapp.log_file_path');
+    if (empty($_SERVER['HTTP_HOST'])) {
+        $_SERVER['HTTP_HOST'] = '';
+        $path = config('myapp.local_log_file_path');
+    } else {
+        $path = config('myapp.log_file_path');
+    }
     if (empty($path)) {
         _pack("找不到log_file_path配置", false);
     }
@@ -393,12 +404,16 @@ function log_file($prefix = 'log_file', $operation_name = '', $request_data = ""
     else
         $return_src = json_encode($return_data, JSON_UNESCAPED_UNICODE);
 
+
+    if (empty($_SERVER['REQUEST_URI'])) {
+        $_SERVER['REQUEST_URI'] = '';
+    }
     $text[] = "操作名称：$operation_name";
     $text[] = "日期：" . date("Y-m-d H:i:s");
     $text[] = '请求地址：http://' . $_SERVER['HTTP_HOST'] . $_SERVER["REQUEST_URI"];
     $text[] = 'GET数据：' . urldecode(http_build_query($_GET));
     $text[] = 'POST数据：' . urldecode(http_build_query($_POST));
-    $put_data = isset($GLOBALS["HTTP_RAW_POST_DATA"]) ? $GLOBALS["HTTP_RAW_POST_DATA"] : file_get_contents('php://input', 'r');
+    $put_data = file_get_contents('php://input', 'r');
     $text[] = 'PUT数据：' . $put_data;
     $text[] = "输入数据：" . $request_str;
     $text[] = "输出数据：" . $return_src;
