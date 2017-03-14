@@ -8,7 +8,6 @@
 
 namespace Tool\WxQy;
 
-use Tool\Routing\Url;
 
 /**
  * 用户
@@ -17,10 +16,9 @@ use Tool\Routing\Url;
  */
 class WxQyLogin extends WxQyExecute
 {
-    public function getCode($state = '', $redirectAction = 'Wx@anyWxQyGetUserInfo')
+    public function getCode($state = '', $redirect = 'wx-base/login/get-user-info')
     {
-        $url_tool = new Url();
-        $redirectUrl = $url_tool->action($redirectAction);
+        $redirectUrl = url($redirect);
         $url = $this->createOauthUrlForCode($redirectUrl, $state);
         return $url;
     }

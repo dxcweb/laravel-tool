@@ -58,21 +58,7 @@ class WxQyJsapiTicket extends WxQyExecute
      */
     private function getCacheTicket()
     {
-        $cache_type = config("myapp.cache_type");
-        $data = [];
-        if ($cache_type == 'redis') {
-            $data = json_decode(Redis::get('jsapi_ticket' . $this->corp_id), true);
-        } else {
-            //默认使用文件
-            $log_file_path = config('myapp.log_file_path');
-            if (empty($log_file_path)) {
-                _pack("找不到log_file_path配置文件", false);
-            }
-            $path = $log_file_path . "wxCache/" . $this->corp_id . '/' . 'jsapi_ticket.json';
-            if (is_file($path)) {
-                $data = json_decode(file_get_contents($path), true);
-            }
-        }
+        $data = json_decode(Redis::get('jsapi_ticket' . $this->corp_id), true);
         if (!empty($data) && !empty($data['expire_time']) && $data['expire_time'] > time() && !empty($data['access_token'])) {
             return $data['access_token'];
         }
@@ -84,23 +70,9 @@ class WxQyJsapiTicket extends WxQyExecute
      */
     private function setCacheTicket($ticket)
     {
-        $cache_type = config("myapp.cache_type");
         $data['expire_time'] = time() + 7000;
         $data['ticket'] = $ticket;
-        if ($cache_type == 'redis') {
-            Redis::setex('jsapi_ticket_' . $this->corp_id, 7000, json_encode($data));
-        } else {
-            //默认使用文件
-            $log_file_path = config('myapp.log_file_path');
-            if (empty($log_file_path)) {
-                _pack("找不到log_file_path配置文件", false);
-            }
-            $path = $log_file_path . "wxCache/" . $this->corp_id . '/' . 'jsapi_ticket.json';
-            mkDirs(dirname($path));
-            $fp = fopen($path, "w");
-            fwrite($fp, json_encode($data));
-            fclose($fp);
-        }
+        Redis::setex('jsapi_ticket_' . $this->corp_id, 7000, json_encode($data));
     }
 
     /**

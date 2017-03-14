@@ -42,8 +42,7 @@ class DBConnection
 
     public function get($columns = ['*'])
     {
-        $data = $this->connection->get($columns);
-        config('database.fetch');
+        $data = $this->connection->get($columns)->all();
         if (config('database.fetch') == \PDO::FETCH_ASSOC) {
             $res = $data;
         } else {

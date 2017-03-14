@@ -119,7 +119,7 @@ function _unsetSession($name)
 }
 
 
-function _getInput($is_filters = true)
+function _getInput($is_filters = false)
 {
     return \Tool\Input::getInput($is_filters);
 }
@@ -383,16 +383,8 @@ function _now()
 
 function log_file($prefix = 'log_file', $operation_name = '', $request_data = "", $return_data = "", $remarks = "", $content = "")
 {
-    if (empty($_SERVER['HTTP_HOST'])) {
-        $_SERVER['HTTP_HOST'] = '';
-        $path = config('myapp.local_log_file_path');
-    } else {
-        $path = config('myapp.log_file_path');
-    }
-    if (empty($path)) {
-        _pack("找不到log_file_path配置", false);
-    }
-    $path .= $prefix . '/' . date("Y_m_d") . '.log';
+
+    $path = base_path() . '/storage/logs/' . $prefix . '/' . date("Y_m_d") . '.log';
     mkDirs(dirname($path));
 
     if (is_string($request_data))

@@ -12,19 +12,19 @@ use Tool\Util\Http;
 
 class  WxQyExecute extends WxQyToken
 {
-    public function execute($uri, $type = "", $data = "", $remarks = "")
-    {
-        $res = $this->execute_return($uri, $data);
-        if (!$res['result']) {
-            $error = $res['msg'];
-            error_to_db($type, $data, $error, "URL:" . $uri);
-            Http::notice("DB", "同步报错！", json_encode_cn($error));
-            _pack($type . "错误。请管理员查看日志！" . json_encode_cn($error), false);
-            return false;
-        } else {
-            return $res['data'];
-        }
-    }
+//    public function execute($uri, $type = "", $data = "", $remarks = "")
+//    {
+//        $res = $this->execute_return($uri, $data);
+//        if (!$res['result']) {
+//            $error = $res['msg'];
+//            error_to_db($type, $data, $error, "URL:" . $uri);
+//            Http::notice("DB", "同步报错！", json_encode_cn($error));
+//            _pack($type . "错误。请管理员查看日志！" . json_encode_cn($error), false);
+//            return false;
+//        } else {
+//            return $res['data'];
+//        }
+//    }
 
     /**
      * 执行返回
@@ -34,8 +34,9 @@ class  WxQyExecute extends WxQyToken
         $url = $this->getRequestUrl($uri, $reload);
         $res = $this->curl($url, $this->json_encode_cn($data));
         $check_data = $this->checkData($res);
+
         if ($check_data['result']) {
-            log_file("log/wxqy/execute_return", "执行返回", $data, $check_data['data'], $uri, "成功！");
+//            log_file("log/wxqy/execute_return", "执行返回", $data, $check_data['data'], $uri, "成功！");
             return $check_data;
         } else {
             if ($reload) {
