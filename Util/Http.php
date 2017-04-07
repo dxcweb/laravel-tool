@@ -17,7 +17,6 @@ class Http
             return false;
         }
         $data['agent_id'] = config("myapp.error_notice_agent_id");
-
         if (empty($data['agent_id'])) {
             return false;
         }

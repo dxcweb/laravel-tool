@@ -400,9 +400,13 @@ function log_file($prefix = 'log_file', $operation_name = '', $request_data = ""
     if (empty($_SERVER['REQUEST_URI'])) {
         $_SERVER['REQUEST_URI'] = '';
     }
+    $HTTP_HOST = '';
+    if (!empty($_SERVER['HTTP_HOST'])) {
+        $HTTP_HOST = $_SERVER['HTTP_HOST'];
+    }
     $text[] = "操作名称：$operation_name";
     $text[] = "日期：" . date("Y-m-d H:i:s");
-    $text[] = '请求地址：http://' . $_SERVER['HTTP_HOST'] . $_SERVER["REQUEST_URI"];
+    $text[] = '请求地址：http://' . $HTTP_HOST . $_SERVER["REQUEST_URI"];
     $text[] = 'GET数据：' . urldecode(http_build_query($_GET));
     $text[] = 'POST数据：' . urldecode(http_build_query($_POST));
     $put_data = file_get_contents('php://input', 'r');
@@ -492,4 +496,24 @@ function str_replace_once($needle, $replace, $haystack)
         return $haystack;
     }
     return substr_replace($haystack, $replace, $pos, strlen($needle));
+}
+
+function createRandStr($length = 32)
+{
+    $chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    $str = "";
+    for ($i = 0; $i < $length; $i++) {
+        $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+    }
+    return $str;
+}
+
+function createRandNumber($length = 10)
+{
+    $chars = "0123456789";
+    $str = "";
+    for ($i = 0; $i < $length; $i++) {
+        $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+    }
+    return $str;
 }
