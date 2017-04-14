@@ -32,6 +32,7 @@ class Http
         $content = str_replace(":", " = ", "$content");
         $content = str_replace('"', "``", "$content");
         $notice_content =
+            date('Y-m-d H:i:s') . "\n" .
             "项目：" . config('myapp.app_name') . "\n" .
             "环境：" . config('myapp.env') . "\n" .
             "日志路径：" . $log_path . "\n" .

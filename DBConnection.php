@@ -122,6 +122,20 @@ class DBConnection
         return $this;
     }
 
+    public function whereArr($where = [])
+    {
+        foreach ($where as $val) {
+            $key = $val[0];
+            $operator = $val[1];
+            $value = $val[2];
+            $boolean = 'and';
+            if (isset($val[3]))
+                $boolean = $val[3];
+            $this->connection = $this->connection->where($key, $operator, $value, $boolean);
+        }
+        return $this;
+    }
+
     public function where($column, $operator = null, $value = null, $boolean = 'and')
     {
         $this->connection = $this->connection->where($column, $operator, $value, $boolean);
@@ -146,12 +160,13 @@ class DBConnection
         return $this;
     }
 
-	public function orderByRaw($column)
+    public function orderByRaw($column)
     {
         $this->connection = $this->connection->orderByRaw($column);
         return $this;
     }
-	public function whereRaw($column)
+
+    public function whereRaw($column)
     {
         $this->connection = $this->connection->whereRaw($column);
         return $this;
@@ -263,6 +278,7 @@ class DBConnection
         $this->connection = $this->connection->leftJoin($table, $one, $operator, $two, $type = 'inner', $where);
         return $this;
     }
+
     public function rightJoin($table, $one, $operator = null, $two = null, $type = 'inner', $where = false)
     {
         $this->connection = $this->connection->rightJoin($table, $one, $operator, $two, $type = 'inner', $where);
