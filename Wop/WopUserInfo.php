@@ -30,9 +30,9 @@ class WopUserInfo
             if (empty($url)) {
                 dd('.env文件中未定义WOP_URL');
             }
-            $wx_app_id = env('WX_APP_ID');
-            if (empty($wx_app_id)) {
-                dd('.env文件中未定义WX_APP_ID');
+            $wop_app_id = env('WOP_APP_ID');
+            if (empty($wop_app_id)) {
+                dd('.env文件中未定义WOP_APP_ID');
             }
             $cookie_name = env('WOP_COOKIE', 'wop2');
             if (empty($_COOKIE[$cookie_name])) {
@@ -40,7 +40,7 @@ class WopUserInfo
             }
             $cookie = $_COOKIE[$cookie_name];
 //            dd($url . 'wx-base/get-user-info');
-            $res = Http::post($url . 'wx-base/get-user-info', ['wx_app_id' => $wx_app_id, 'cookie' => $cookie]);
+            $res = Http::post($url . 'wx-base/get-user-info', ['app_id' => $wop_app_id, 'cookie' => $cookie]);
             if (!$res['result']) {
                 return [];
             }
