@@ -301,21 +301,17 @@ class DBConnection
     public function antPage()
     {
         $p = _getInput();
-        $page = 1;
-        $pageSize = 10;
-        if (isset($p['page'])) {
-            $page = $p['page'];
+        if (!empty($p['pagination'])) {
+            $page = 1;
+            $pageSize = 10;
+            if (isset($p['pagination']['current'])) {
+                $page = $p['pagination']['current'];
+            }
+            if (isset($p['pagination']['pageSize'])) {
+                $pageSize = $p['pagination']['pageSize'];
+            }
+            $this->page($page, $pageSize);
         }
-        if (isset($p['pageSize'])) {
-            $pageSize = $p['pageSize'];
-        }
-        $this->page($page, $pageSize);
-//        if (isset($_GET['sort'])) {
-//            $sort = json_decode($_GET['sort'], true);
-//            if (isset($sort[0]['property']) && isset($sort[0]['direction'])) {
-//                $this->orderBy($sort[0]['property'], $sort[0]['direction']);
-//            }
-//        }
         return $this;
     }
 

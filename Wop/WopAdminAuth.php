@@ -36,14 +36,14 @@ class WopAdminAuth
             $permission_key = $action[1]['key'];
         }
         if (is_string($permission_key)) {
-            if (isset($user_info['permission'][$permission_key])) {
+            if (array_key_exists($permission_key,$user_info['permission'])) {
                 if ($this->permission($permission_key, $user_info['permission'][$permission_key])) {
                     return $next($request);
                 }
             }
         } else {
             foreach ($permission_key as $value) {
-                if (isset($user_info['permission'][$value])) {
+                if (array_key_exists($value,$user_info['permission'])) {
                     if ($this->permission($value, $user_info['permission'][$value])) {
                         return $next($request);
                     }

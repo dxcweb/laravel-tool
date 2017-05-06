@@ -58,6 +58,7 @@ class Input
         if (!empty($put_data)) {
             $data = json_decode($put_data, true);
             if (!empty($data)) {
+                $data = array_merge($data, $_GET);
                 return $data;
             }
         }
@@ -67,6 +68,10 @@ class Input
         } else {
             $data = $input;
         }
+        if (empty($data)) {
+            $data = [];
+        }
+        $data = array_merge($data, $_GET);
         return $data;
     }
 
