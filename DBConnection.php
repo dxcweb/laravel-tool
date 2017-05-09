@@ -328,15 +328,16 @@ class DBConnection
         return $this;
     }
 
-    public function increment($key, $val)
+    public function increment($column, $amount = 1, array $extra = [])
     {
-        return $this->connection = $this->connection->increment($key, $val);
+        return $this->connection = $this->connection->increment($column, $amount,$extra);
     }
 
-    public function decrement($key, $val)
+    public function decrement($column, $amount = 1, array $extra = [])
     {
-        return $this->connection = $this->connection->decrement($key, $val);
+        return $this->connection = $this->connection->decrement($column, $amount,$extra);
     }
+
 
     public function beginTransaction()
     {

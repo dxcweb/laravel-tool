@@ -46,8 +46,16 @@ class Input
         }
 
         if (is_array($data)) {
-            self::$filters_data = array_merge(self::$filters_data, $data);
-            self::$original_data = array_merge(self::$original_data, $data);
+            if (empty(self::$filters_data)) {
+                self::$filters_data = $data;
+            } else {
+                self::$filters_data = array_merge(self::$filters_data, $data);
+            }
+            if (empty(self::$original_data)) {
+                self::$original_data = $data;
+            } else {
+                self::$original_data = array_merge(self::$original_data, $data);
+            }
         }
     }
 
