@@ -13,8 +13,8 @@
 
    $config['driver'] = 'Oss';
    $config['savePath'] = 'imgs/';
-   $config['driverConfig']['access_id'] = 'xJyuP5WoS4MMULkJ';
-   $config['driverConfig']['access_key'] = 'QcxIauVqFpmR46xyNKHKEz9loIZbjN';
+   $config['driverConfig']['access_id'] = '';
+   $config['driverConfig']['access_key'] = '';
    $config['driverConfig']['host'] = 'oss-cn-shenzhen.aliyuncs.com ';
    $config['driverConfig']['bucket'] = 'img-develop';
    $upload = new Upload($config);
