@@ -65,7 +65,7 @@ class Input
         $put_data = file_get_contents('php://input', 'r');
         if (!empty($put_data)) {
             $data = json_decode($put_data, true);
-            if (!is_array($data)) {
+            if (is_array($data)) {
                 $data = array_merge($data, $_GET);
                 return $data;
             }
