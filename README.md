@@ -1,4 +1,5 @@
 "# dxcweb 0.1.2"
+0.1.3 修改array_merge报错
 0.1.2
 0.1.1
 添加有赞接口，修改wopadmin中间件
