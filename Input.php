@@ -83,6 +83,18 @@ class Input
         return $data;
     }
 
+    private static function array_map_recursive($filter, $data)
+    {
+        $result = array();
+        foreach ($data as $key => $val)
+        {
+            $result[$key] = is_array($val)
+                ? self::array_map_recursive($filter, $val)
+                : call_user_func($filter, $val);
+        }
+
+        return $result;
+    }
     //字段过滤。防止sql注入或xss注入
     private static function data_filters($data)
     {
@@ -104,7 +116,7 @@ class Input
             if (is_array($filters)) {
                 foreach ($filters as $filter) {
                     if (function_exists($filter)) {
-                        $data = is_array($data) ? array_map_recursive($filter, $data) : $filter($data); // 参数过滤
+                        $data = is_array($data) ? self::array_map_recursive($filter, $data) : $filter($data); // 参数过滤
                     } else {
                         $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
                         if (false === $data) {
